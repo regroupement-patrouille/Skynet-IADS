@@ -1,4 +1,4 @@
-env.info("--- SKYNET VERSION: 3.1.0 | BUILD TIME: 09.02.2023 1925Z ---")
+env.info("--- SKYNET VERSION: 3.1.1RP | BUILD TIME: 01.06.2023 1612Z ---")
 do
 --this file contains the required units per sam type
 samTypesDB = {
@@ -1876,7 +1876,10 @@ end
 function SkynetIADSAbstractDCSObjectWrapper:setDCSRepresentation(representation)
 	self.dcsRepresentation = representation
 	if self.dcsRepresentation then
-		self.dcsName = self:getDCSRepresentation():getName()
+		self.dcsName = self.dcsRepresentation:getName() -- FG 11/05/2023 - baleBaron hotfix issue 81
+		if (self.dcsName == nil or string.len(self.dcsName) == 0) and self.dcsRepresentation.id_ then
+			self.dcsName = self.dcsRepresentation.id_
+		end
 	end
 end
 
@@ -3810,7 +3813,17 @@ function SkynetIADSHARMDetection:getNewRadarsThatHaveDetectedContact(contact)
 			end
 		end
 	end
-	self.contactRadarsEvaluated[contact] = contact:getAbstractRadarElementsDetected()
+	-- FG correction FG self.contactRadarsEvaluated[contact] = contact:getAbstractRadarElementsDetected()
+	-- if the evaluated table is the same as the detected one, when we merge the contact and update the detected table all new radars are considered as having already evaluated the contact for HARM
+	-- so the table needs to be a *copy*
+	-- then again it is dubious that the hard ident is correct (as described in the docs) because the radars will detect the harm one after the other, and try each one in turn for the identify
+	-- the case when multiple radars will pick up the harm in the same 5 second loop (and so up the prob of ident) seems rare
+	local radarsDetected = contact:getAbstractRadarElementsDetected()
+	self.contactRadarsEvaluated[contact] = {}
+	for j = 1, #radarsDetected do
+		table.insert(self.contactRadarsEvaluated[contact], radarsDetected[j])
+	end
+	--
 	return newRadars
 end
 
