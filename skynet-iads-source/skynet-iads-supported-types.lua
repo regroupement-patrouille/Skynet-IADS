@@ -439,6 +439,23 @@ samTypesDB = {
 		},
 
 		['harm_detection_chance'] = 60
-	},	
+	},
+	['FPS-117'] = {
+		['type'] = 'ewr',
+		['searchRadar'] = {
+			['FPS-117 Dome'] = {
+				['name'] = {
+					['NATO'] = 'FPS-117 EWR',
+				},
+			},
+			['FPS-117'] = {
+				['name'] = {
+					['NATO'] = 'FPS-117 EWR',
+				},
+			},
+
+		},
+		['harm_detection_chance'] = 70
+	},
 }
 end

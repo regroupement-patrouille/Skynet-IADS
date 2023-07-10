@@ -1,4 +1,4 @@
-env.info("--- SKYNET VERSION: 3.1.1RP | BUILD TIME: 01.06.2023 1612Z ---")
+env.info("--- SKYNET VERSION: 3.1.2RP | BUILD TIME: 10.07.2023 1851Z ---")
 do
 --this file contains the required units per sam type
 samTypesDB = {
@@ -440,7 +440,24 @@ samTypesDB = {
 		},
 
 		['harm_detection_chance'] = 60
-	},	
+	},
+	['FPS-117'] = {
+		['type'] = 'ewr',
+		['searchRadar'] = {
+			['FPS-117 Dome'] = {
+				['name'] = {
+					['NATO'] = 'FPS-117 EWR',
+				},
+			},
+			['FPS-117'] = {
+				['name'] = {
+					['NATO'] = 'FPS-117 EWR',
+				},
+			},
+
+		},
+		['harm_detection_chance'] = 70
+	},
 }
 end
 do
