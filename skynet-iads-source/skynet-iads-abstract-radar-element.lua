@@ -804,8 +804,10 @@ end
 
 function SkynetIADSAbstractRadarElement:informOfHARM(harmContact)
 	local radars = self:getRadars()
-		for j = 1, #radars do
-			local radar = radars[j]
+	for j = 1, #radars do
+		local radar = radars[j]
+
+		if radar:isExist() then -- baleBaron PR https://github.com/walder/Skynet-IADS/pull/84
 			local distanceNM =  mist.utils.metersToNM(self:getDistanceInMetersToContact(radar, harmContact:getPosition().p))
 			local harmToSAMHeading = mist.utils.toDegree(mist.utils.getHeadingPoints(harmContact:getPosition().p, radar:getPosition().p))
 			local harmToSAMAspect = self:calculateAspectInDegrees(harmContact:getMagneticHeading(), harmToSAMHeading)
@@ -825,6 +827,7 @@ function SkynetIADSAbstractRadarElement:informOfHARM(harmContact)
 				end
 			end
 		end
+	end
 end
 
 function SkynetIADSAbstractElement:addObjectIdentifiedAsHARM(harmContact)
