@@ -46,6 +46,11 @@ samTypesDB = {
 					['NATO'] = 'Big Bird',
 				},
 			},
+			['S-300PS 40B6MD sr_19J6'] = {
+				['name'] = {
+					['NATO'] = 'Tin Shield',
+				},
+			},
 		},
 		['trackingRadar'] = {
 			['S-300PS 40B6M tr'] = {
@@ -373,7 +378,7 @@ samTypesDB = {
 			},
 		},
 		['name'] = {
-			['NATO'] = 'Zues',
+			['NATO'] = 'Zeus',
 		},
 		['harm_detection_chance'] = 10
 	},
@@ -394,6 +399,23 @@ samTypesDB = {
 		},
 		['harm_detection_chance'] = 30
 	},
+	['HEMTT_C-RAM_Phalanx'] = {
+		['type'] = 'single',
+		['searchRadar'] = {
+			['HEMTT_C-RAM_Phalanx'] = {
+			},
+		},
+		['launchers'] = {
+			['HEMTT_C-RAM_Phalanx'] = {
+			},
+		},
+		['name'] = {
+			['NATO'] = 'C-RAM Phalanx',
+		},
+		['harm_detection_chance'] = 40,
+		['can_engage_harm'] = true
+	},
+
 --- Start of EW radars:
 	['1L13 EWR'] = {
 		['type'] = 'ewr',
