@@ -1,4 +1,4 @@
-env.info("--- SKYNET VERSION: 3.3.0 | BUILD TIME: 29.12.2023 2311Z ---")
+env.info("--- SKYNET VERSION: 3.3.1RP | BUILD TIME: 21.01.2024 1754Z ---")
 do
 --this file contains the required units per sam type
 samTypesDB = {	
@@ -3175,12 +3175,15 @@ function SkynetIADSContact:getTypeName()
 	if self:isIdentifiedAsHARM() then
 		return SkynetIADSContact.HARM
 	end
+
+	-- self:getDCSRepresentation():getCategory() will fail with an error if self:getDCSRepresentation() is not nil but the unit is destroyed. The error will obviously interrupt the treatment that called getTypeName(), with consequences I did not try to track.
+	-- Using Object.getCategory instead will get us nil in that case.
 	if self:getDCSRepresentation() ~= nil then
-		local category = self:getDCSRepresentation():getCategory()
+		local category = Object.getCategory(self:getDCSRepresentation())
 		if category == Object.Category.UNIT then
 			return self.typeName
 		end
-	end
+	end 
 	return "UNKNOWN"
 end
 
