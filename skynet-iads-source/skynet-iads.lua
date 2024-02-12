@@ -347,9 +347,45 @@ function SkynetIADS.evaluateContacts(self)
 			local contact = self.contacts[j]
 			-- the DCS Radar only returns enemy aircraft, if that should change a coalition check will be required
 			-- currently every type of object in the air is handed of to the SAM site, including missiles
-			local description = contact:getDesc()
-			local category = description.category
-			if category and category ~= Unit.Category.GROUND_UNIT and category ~= Unit.Category.SHIP and category ~= Unit.Category.STRUCTURE then
+			--local description = contact:getDesc()
+			--local category = description.category
+			--if category and category ~= Unit.Category.GROUND_UNIT and category ~= Unit.Category.SHIP and category ~= Unit.Category.STRUCTURE then
+			--	samToTrigger:informOfContact(contact)
+			--end
+			--[[
+				Above code will not always work, as it assumes the contact is a unit. But actually a contact can be a unit or a weapon. 
+				Categories returned by description.category will not be the same for a unit or a weapon:
+					Unit.Category = { AIRPLANE=0, HELICOPTER=1, GROUND_UNIT=2, SHIP=3, STRUCTURE=4 }
+					Weapon.Category = { SHELL=0, MISSILE=1, ROCKET=2, BOMB=3 }
+
+				So as it is, as we consider only the units categories that are not in [2, 3, 4]:
+					An airplane or a helicopter will be passed to the sites as designed
+					A missile (HARM, JSOW...) will be passed as well but only by chance because its category is equal to AIRPLANE
+					A bomb though will not be passed because its category is equal to SHIP
+
+				This has become an issue since the Phalanx has been introduced, as it is a unit capable of engaging incoming bombs.
+				As it is now, a Phalanx will be kept off when bombs are inbound.
+								
+				Proposed correction consist in correctly considering the contact object category, before looking at its description category.
+				I also think it would be better to test for categories to include, rather than categories to exclude, but this is another matter.
+
+				Note 1: we could enhance that by only turning the site on when they can indeed engage the target, like it is done for the HARMs.
+				Note 2: maybe the shells and rockets can be engaged by the CRAMs as it is in real life ?
+
+				Modified code follows...
+			]]
+
+			local bShouldInform = false
+			local objectCategory = Object.getCategory(contact:getDCSRepresentation())
+			local category = contact:getDesc().category
+
+			if (objectCategory == Object.Category.UNIT) then
+				bShouldInform = category ~= Unit.Category.GROUND_UNIT and category ~= Unit.Category.SHIP and category ~= Unit.Category.STRUCTURE
+			elseif (objectCategory == Object.Category.WEAPON) then
+				bShouldInform = category ~= Weapon.Category.SHELL and category ~= Weapon.Category.ROCKET
+			end
+
+			if category and bShouldInform then
 				samToTrigger:informOfContact(contact)
 			end
 		end
