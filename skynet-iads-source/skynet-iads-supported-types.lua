@@ -386,6 +386,22 @@ samTypesDB = {
 		},
 		['harm_detection_chance'] = 10
 	},
+	['Phalanx'] = {
+		['type'] = 'single',
+		['searchRadar'] = {
+			['HEMTT_C-RAM_Phalanx'] = {
+			},
+		},
+		['launchers'] = {
+			['HEMTT_C-RAM_Phalanx'] = {
+			},
+		},
+		['name'] = {
+			['NATO'] = 'Phalanx',
+		},
+		['harm_detection_chance'] = 10,
+		['can_engage_harm'] = true
+	},	
 	['HQ-7'] = {
 		['searchRadar'] = {
 			['HQ-7_STR_SP'] = {
@@ -403,22 +419,56 @@ samTypesDB = {
 		},
 		['harm_detection_chance'] = 30
 	},	
-	['Phalanx'] = {
+	['Tor M2'] = {
 		['type'] = 'single',
 		['searchRadar'] = {
-			['HEMTT_C-RAM_Phalanx'] = {
+			['CHAP_TorM2'] = {
 			},
 		},
 		['launchers'] = {
-			['HEMTT_C-RAM_Phalanx'] = {
+			['CHAP_TorM2'] = {
 			},
 		},
 		['name'] = {
-			['NATO'] = 'Phalanx',
+			['NATO'] = 'SA-15 Gauntlet',
+		},
+		['harm_detection_chance'] = 90,
+		['can_engage_harm'] = true
+	},	
+	['Pantsir S1'] = {
+		['type'] = 'single',
+		['searchRadar'] = {
+			['CHAP_PantsirS1'] = {
+			},
+		},
+		['launchers'] = {
+			['CHAP_PantsirS1'] = {
+			},
+		},
+		['name'] = {
+			['NATO'] = 'SA-22 Greyhound',
 		},
 		['harm_detection_chance'] = 10,
 		['can_engage_harm'] = true
 	},	
+	['Iris-T SLM'] = {
+		['type'] = 'complex',
+		['searchRadar'] = {
+			['CHAP_IRISTSLM_STR'] = {
+				['name'] = {
+					['NATO'] = 'Hensoldt TRML-4D',
+				},
+			},
+		},
+		['launchers'] = {
+			['CHAP_IRISTSLM_LN'] = {
+			},
+		},
+		['name'] = {
+			['NATO'] = 'Iris-T SLM',
+		},
+		['harm_detection_chance'] = 40
+	},
 -- Start of RED EW radars:	
 	['1L13 EWR'] = {
 		['type'] = 'ewr',
