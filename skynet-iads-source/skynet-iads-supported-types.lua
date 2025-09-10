@@ -430,7 +430,7 @@ samTypesDB = {
 			},
 		},
 		['name'] = {
-			['NATO'] = 'SA-15 Gauntlet',
+			['NATO'] = 'SA-15 Gauntlet M2',
 		},
 		['harm_detection_chance'] = 90,
 		['can_engage_harm'] = true
@@ -467,7 +467,23 @@ samTypesDB = {
 		['name'] = {
 			['NATO'] = 'Iris-T SLM',
 		},
-		['harm_detection_chance'] = 40
+		['harm_detection_chance'] = 90,
+		['can_engage_harm'] = true
+	},
+	['Buk Solo'] = {
+		['type'] = 'single',
+		['searchRadar'] = {
+			['SA-11 Buk LN 9A310M1'] = {
+			},
+		},
+		['launchers'] = {
+			['SA-11 Buk LN 9A310M1'] = {
+			},
+		},
+		['name'] = {
+			['NATO'] = 'SA-11 Gadfly Solo',
+		},
+		['harm_detection_chance'] = 70
 	},
 -- Start of RED EW radars:	
 	['1L13 EWR'] = {
