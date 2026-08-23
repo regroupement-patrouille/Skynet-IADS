@@ -96,6 +96,44 @@ function TestSkynetIADS:testEvaluateContacts1EWAnd1SAMSiteWithContactInRange()
 	iads:deactivate()
 end
 
+--a SAM site that is already live must stay live while the target is still under EW coverage.
+--targetCycleUpdateStart() clears targetsInRange on every cycle, so if evaluateContacts() skips
+--sites that are already active, nothing sets the flag again and targetCycleUpdateEnd() sends them
+--dark on the next cycle. In game that reads as a site raising its launchers and standing down
+--every few seconds without ever firing.
+function TestSkynetIADS:testSAMSiteStaysLiveWhileTargetRemainsUnderEWCoverage()
+	self:tearDown()
+	local iads = SkynetIADS:create()
+	local ewRadar = iads:addEarlyWarningRadar('EW-west23')
+
+	function ewRadar:getDetectedTargets()
+		return {IADSContactFactory('test-in-firing-range-of-sa-2')}
+	end
+
+	local samSite = iads:addSAMSite('SAM-SA-2')
+
+	function samSite:getDetectedTargets()
+		return {}
+	end
+
+	samSite:goDark()
+	iads:activate()
+
+	iads:evaluateContacts()
+	lu.assertEquals(samSite:isActive(), true)
+
+	--the target has not moved and the EW radar still sees it, so a second cycle must not
+	--switch the site off
+	iads:evaluateContacts()
+	lu.assertEquals(samSite:isActive(), true)
+
+	--and a third, to show it is a steady state and not a one-cycle grace period
+	iads:evaluateContacts()
+	lu.assertEquals(samSite:isActive(), true)
+
+	iads:deactivate()
+end
+
 function TestSkynetIADS:testEarlyWarningRadarHasWorkingPowerSourceByDefault()
 	local ewRadar = self.testIADS:getEarlyWarningRadarByUnitName('EW-west')
 	lu.assertEquals(ewRadar:hasWorkingPowerSource(), true)

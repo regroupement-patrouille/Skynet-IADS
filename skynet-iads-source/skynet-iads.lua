@@ -327,11 +327,11 @@ function SkynetIADS.evaluateContacts(self)
 			local samSitesUnderCoverage = ewRadar:getUsableChildRadars()
 			for j = 1, #samSitesUnderCoverage do
 				local samSiteUnterCoverage = samSitesUnderCoverage[j]
-				-- only if a SAM site is not active we add it to the hash of SAM sites to be iterated later on
-				if samSiteUnterCoverage:isActive() == false then
-					--we add them to a hash to make sure each SAM site is in the collection only once, reducing the number of loops we conduct later on
-					samSitesToTrigger[samSiteUnterCoverage:getDCSName()] = samSiteUnterCoverage
-				end
+				--we add them to a hash to make sure each SAM site is in the collection only once, reducing the number of loops we conduct later on
+				--sites that are already active are included deliberately: targetCycleUpdateStart() has just
+				--cleared their targetsInRange flag, so skipping them left it false and targetCycleUpdateEnd()
+				--sent them dark again on the very next cycle, with the target still under EW coverage
+				samSitesToTrigger[samSiteUnterCoverage:getDCSName()] = samSiteUnterCoverage
 			end
 			for j = 1, #ewContacts do
 				local contact = ewContacts[j]
