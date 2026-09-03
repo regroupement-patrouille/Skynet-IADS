@@ -1,6 +1,8 @@
 --- Discover and run every test/lua/test_*.lua as a child process, aggregating
 --- exit codes.  Usage:  lua run.lua [filenameSubstring]
 
+assert(_VERSION == "Lua 5.1", "run.lua: needs Lua 5.1 (DCS runtime); got " .. _VERSION)
+
 local base = debug.getinfo(1, "S").source:match("^@(.+)[\\/]") or "."
 local sep = package.config:sub(1, 1) -- "\" on Windows, "/" elsewhere
 local isWindows = (sep == "\\")
@@ -31,8 +33,12 @@ end
 
 local suites = listSuites()
 if #suites == 0 then
-  print("run.lua: no matching suites")
-  os.exit(0)
+  if filter then
+    print("run.lua: no suites match '" .. filter .. "'")
+    os.exit(0)
+  end
+  print("run.lua: no suites found in " .. base)
+  os.exit(1)
 end
 
 local failed = {}

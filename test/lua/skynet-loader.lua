@@ -42,7 +42,10 @@ function M.load(name)
   if not chunk then
     error("skynet-loader: cannot load '" .. name .. "' from " .. path .. "\n" .. tostring(err))
   end
-  chunk()
+  local ok, execErr = pcall(chunk)
+  if not ok then
+    error("skynet-loader: '" .. name .. "' failed while executing: " .. tostring(execErr))
+  end
   M._loaded[name] = true
 end
 

@@ -34,6 +34,9 @@ function Object.getCategory(o)
   if o == nil then
     return nil
   end
+  if o.isExist and o:isExist() == false then
+    return nil -- DCS: a destroyed object reports no category
+  end
   return o.__category or Object.Category.UNIT
 end
 

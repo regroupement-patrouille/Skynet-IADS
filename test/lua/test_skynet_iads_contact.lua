@@ -140,6 +140,11 @@ function TestSkynetIADSContact:test_updateSimpleAltitudeProfile_descend_then_cli
   profile = self.contact:getSimpleAltitudeProfile()
   luaunit.assertEquals(profile[2], SkynetIADSContact.CLIMB)
   luaunit.assertEquals(#profile, 2)
+
+  self.contact.position.p.y = 100
+  y = 200 -- still climbing (100 < 200), but previousPath == CLIMB => not appended
+  self.contact:updateSimpleAltitudeProfile()
+  luaunit.assertEquals(#self.contact:getSimpleAltitudeProfile(), 2)
 end
 
 -- ---- HARM state (ported verbatim) ------------------------------

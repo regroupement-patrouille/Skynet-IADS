@@ -5,6 +5,9 @@ on:
     branches: [master]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   lua-unit-tests:
     name: Lua unit tests (5.1)

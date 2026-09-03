@@ -33,6 +33,13 @@ function TestDcsStub:test_object_getCategory()
   luaunit.assertEquals(Object.getCategory({ __category = Object.Category.WEAPON }), Object.Category.WEAPON)
 end
 
+function TestDcsStub:test_object_getCategory_nil_for_destroyed_unit()
+  -- DCS returns nil for a destroyed-but-non-nil unit; skynet-iads-contact.lua
+  -- is defensive about exactly this. The stub honours a dead fixture.
+  luaunit.assertNil(Object.getCategory(dcsStub.makeUnit({ exists = false })))
+  luaunit.assertEquals(Object.getCategory(dcsStub.makeUnit({ type = "MiG-29" })), Object.Category.UNIT)
+end
+
 function TestDcsStub:test_makeUnit_basic_accessors()
   local u = dcsStub.makeUnit({ name = "u1", type = "MiG-29", pos = { x = 10, y = 500, z = -20 } })
   luaunit.assertEquals(u:getName(), "u1")

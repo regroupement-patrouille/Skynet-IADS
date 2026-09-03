@@ -30,4 +30,20 @@ function TestHarnessSmoke:test_loader_memoises()
   luaunit.assertEquals(type(SkynetIADSContact), "table")
 end
 
+function TestHarnessSmoke:test_loader_reset_forces_reload()
+  loader.load("skynet-iads-abstract-dcs-object-wrapper")
+  loader.load("skynet-iads-contact")
+  luaunit.assertEquals(type(SkynetIADSContact), "table")
+
+  -- wipe the global the file defines; a memoised load would NOT bring it back
+  SkynetIADSContact = nil
+  loader.load("skynet-iads-contact") -- still memoised => no-op
+  luaunit.assertNil(SkynetIADSContact)
+
+  -- reset drops the memo; the next load genuinely re-runs the file
+  loader.reset()
+  loader.load("skynet-iads-contact")
+  luaunit.assertEquals(type(SkynetIADSContact), "table")
+end
+
 os.exit(luaunit.LuaUnit.run())
