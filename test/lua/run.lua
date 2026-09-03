@@ -4,17 +4,7 @@
 local base = debug.getinfo(1, "S").source:match("^@(.+)[\\/]") or "."
 local sep = package.config:sub(1, 1) -- "\" on Windows, "/" elsewhere
 local isWindows = (sep == "\\")
--- On Windows, use the basename lua.exe or lua to avoid path quoting issues.
--- On POSIX, arg[-1] is typically "lua" already.
-local interp = "lua"
-if arg[-1] then
-  -- Use just the basename to avoid quoting issues with spaces
-  interp = arg[-1]:match("([^\\/]+)$") or "lua"
-  if interp:lower() == "lua" or interp:lower() == "lua.exe" then
-    -- Already a basename, but on some systems might need .exe
-    interp = "lua"
-  end
-end
+local interp = arg[-1] or "lua"
 local filter = arg[1]
 
 local function listSuites()
@@ -48,7 +38,17 @@ end
 local failed = {}
 for _, name in ipairs(suites) do
   print("\n--- " .. name .. " ---")
-  local ok = os.execute(interp .. " " .. base .. sep .. name)
+  io.stdout:flush()
+  local target = base .. sep .. name
+  local cmd
+  if isWindows then
+    -- cmd.exe strips one leading+trailing quote pair from the whole string,
+    -- so wrap the already-quoted command in an extra pair.
+    cmd = '""' .. interp .. '" "' .. target .. '""'
+  else
+    cmd = '"' .. interp .. '" "' .. target .. '"'
+  end
+  local ok = os.execute(cmd)
   -- Lua 5.1 os.execute returns the process exit code (0 == success). Some
   -- builds return true/false; treat both non-zero and false as failure.
   if ok ~= 0 and ok ~= true then
