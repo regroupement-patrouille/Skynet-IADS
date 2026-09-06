@@ -157,6 +157,7 @@ function TestDcsStub:test_makeGroup_units_and_destroy()
     },
   })
   luaunit.assertIs(Group.getByName("G1"), g)
+  luaunit.assertIs(getmetatable(g), Group) -- a real DCS Group carries its class
   luaunit.assertEquals(g:getName(), "G1")
   luaunit.assertEquals(#g:getUnits(), 2)
   luaunit.assertEquals(g:getUnits()[1]:getTypeName(), "Kub 1S91 str")

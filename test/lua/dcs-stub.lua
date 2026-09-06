@@ -56,10 +56,11 @@ end
 Weapon = { Category = { SHELL = 0, MISSILE = 1, ROCKET = 2, BOMB = 3 } }
 
 -- Skynet's wrapper does `getmetatable(rep) ~= Group` to tell a Group from a
--- Unit/Static. Fixtures are plain tables (metatable nil), and Group here is a
--- non-nil table, so the comparison is always "not a Group" — the Unit/Static
--- branch, which is what milestone 1 needs. A later milestone that tests Group
--- wrappers gives its Group fixtures `setmetatable(g, Group)`.
+-- Unit/Static. A plain Unit/Static fixture has a nil metatable, so it takes the
+-- Unit/Static branch. `dcsStub.makeGroup` sets `setmetatable(g, Group)` on every
+-- group fixture (a real DCS Group carries its class), so group fixtures take the
+-- Group branch — needed by setupElements()/getUnitsToAnalyse() and the wrapper's
+-- getTypeName guard.
 Group = {}
 Unit = {}
 Unit.SensorType = { OPTIC = 0, RADAR = 1, IRST = 2, RWR = 3 }
@@ -243,6 +244,11 @@ function dcsStub.makeGroup(groupSpec)
   if groupSpec.name then
     dcsStub.world[groupSpec.name] = g
   end
+  -- A real DCS Group carries its class; Skynet tells a Group from a Unit/Static
+  -- via getmetatable(rep) == Group (SkynetIADSAbstractDCSObjectWrapper:create's
+  -- getTypeName guard, SkynetIADSAbstractRadarElement:getUnitsToAnalyse). Group
+  -- has no __index, so the instance methods defined above still win.
+  setmetatable(g, Group)
   return g
 end
 

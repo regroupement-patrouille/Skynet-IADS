@@ -63,13 +63,9 @@ function F.samGroup(natoShort, groupName)
   for i = 1, #units do
     units[i].pos = units[i].pos or { x = i, y = 0, z = 0 }
   end
-  local group = dcsStub.makeGroup({ name = groupName, units = units })
-  -- Skynet tells a Group from a Unit/Static via getmetatable(rep) == Group
-  -- (SkynetIADSAbstractRadarElement:getUnitsToAnalyse, and the DCS object
-  -- wrapper's getTypeName guard). dcsStub.makeGroup leaves the metatable nil;
-  -- a group fixture must set it so setupElements iterates the member units.
-  setmetatable(group, Group)
-  return group
+  -- dcsStub.makeGroup sets setmetatable(g, Group), so setupElements() iterates
+  -- the member units instead of treating the group as one unit.
+  return dcsStub.makeGroup({ name = groupName, units = units })
 end
 
 function F.connectionNodeUnit(name)
