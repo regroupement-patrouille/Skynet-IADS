@@ -27,12 +27,23 @@ cmd.exe takes the quoted path as-is:
 
     "C:\Program Files (x86)\Lua\5.1\lua.exe" test\lua\run.lua
 
+## Ported suites
+
+These `unit-tests/` suites now also run standalone (their `.miz` copies are kept):
+`harm-detection`, `abstract-dcs-object-wrapper`, `moose-a2a-connector` (1 test),
+`jammer`, `abstract-element`, `sam-site`, plus the M1 `contact` pilot.
+
+Still DCS-only (need the demo-IADS-world fixture — a later milestone):
+`early-warning-radar`, `abstract-radar-element`, `iads`,
+`red/blue-sam-sites-and-ew-radars`.
+
 ## Files
 
 | File | Purpose |
 |------|---------|
 | `luaunit.lua` | Vendored luaunit 3.4 (upstream, unmodified) |
 | `dcs-stub.lua` | Fake DCS scripting environment + fixture factories |
+| `dcs-fixtures.lua` | Reusable fixtures — SAM group builders, connection nodes, the IADS-contact factory |
 | `mist-stub.lua` | The slice of `mist` the loaded source calls |
 | `skynet-loader.lua` | Loads `skynet-iads-source/*.lua` in dependency order |
 | `run.lua` | Discovers and runs every `test_*.lua`, aggregates exit codes |

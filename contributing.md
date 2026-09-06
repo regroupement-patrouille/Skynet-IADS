@@ -29,6 +29,12 @@ Skynet has two test suites with different jobs:
 | `test/lua/` | plain Lua 5.1 — in VSCode, or `lua5.1 test/lua/run.lua`, and in CI on every push/PR | **logic**: state machines, parsing, maths, branching. No DCS needed. New logic tests go here. |
 | `unit-tests/*.miz` | inside DCS — launch the mission, read `dcs.log` | **functional / smoke**: behaviour that needs the simulator — terrain elevation, radar detection geometry, real in-game events. |
 
+As of milestone 2, the DCS-independent suites (`harm-detection`, `jammer`,
+`sam-site`, `abstract-element`, `abstract-dcs-object-wrapper`, and one
+`moose-a2a-connector` test) have standalone copies under `test/lua/`; their
+`unit-tests/*.miz` originals are kept until the standalone suite has a release
+cycle behind it.
+
 For the standalone suite, add a `test/lua/test_<module>.lua` that `dofile`s
 `luaunit.lua`, `dcs-stub.lua`, `mist-stub.lua`, loads the source module(s) via
 `skynet-loader.lua`, and ends with `os.exit(luaunit.LuaUnit.run())`. See
