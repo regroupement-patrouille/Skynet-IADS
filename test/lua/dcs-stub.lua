@@ -189,9 +189,15 @@ function dcsStub.makeUnit(spec)
     setOption = function(_, id, value)
       table.insert(u.__controllerCalls, { id = id, value = value })
     end,
+    setOnOff = function(_, value)
+      table.insert(u.__controllerCalls, { setOnOff = value })
+    end,
   }
   function u:getController()
     return controller
+  end
+  function u:enableEmission(value)
+    u.__emissionEnabled = value
   end
   function u:getSensors()
     return spec.sensors
@@ -218,9 +224,15 @@ function dcsStub.makeGroup(groupSpec)
     setOption = function(_, id, value)
       table.insert(g.__controllerCalls, { id = id, value = value })
     end,
+    setOnOff = function(_, value)
+      table.insert(g.__controllerCalls, { setOnOff = value })
+    end,
   }
   function g:getName()
     return groupSpec.name or "unnamed-group"
+  end
+  function g:enableEmission(value)
+    g.__emissionEnabled = value
   end
   function g:getUnits()
     local live = {}

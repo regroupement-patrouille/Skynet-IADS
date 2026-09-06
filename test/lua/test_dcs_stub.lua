@@ -156,6 +156,28 @@ function TestDcsStub:test_unit_controller_records_setOption()
   luaunit.assertEquals(u.__controllerCalls[1].value, AI.Option.Air.val.ROE.WEAPON_HOLD)
 end
 
+function TestDcsStub:test_unit_controller_setOnOff_and_enableEmission()
+  -- SkynetIADSAbstractRadarElement:goLive/goDark drive these on the SAM's DCS
+  -- representation and controller.
+  local u = dcsStub.makeUnit({ name = "e1" })
+  u:getController():setOnOff(true)
+  luaunit.assertEquals(#u.__controllerCalls, 1)
+  luaunit.assertEquals(u.__controllerCalls[1].setOnOff, true)
+  luaunit.assertNil(u.__emissionEnabled)
+  u:enableEmission(true)
+  luaunit.assertEquals(u.__emissionEnabled, true)
+  u:enableEmission(false)
+  luaunit.assertEquals(u.__emissionEnabled, false)
+end
+
+function TestDcsStub:test_group_controller_setOnOff_and_enableEmission()
+  local g = dcsStub.makeGroup({ name = "EG1", units = { { name = "EG1-1", type = "T" } } })
+  g:getController():setOnOff(false)
+  luaunit.assertEquals(g.__controllerCalls[1].setOnOff, false)
+  g:enableEmission(true)
+  luaunit.assertEquals(g.__emissionEnabled, true)
+end
+
 function TestDcsStub:test_makeGroup_units_and_destroy()
   dcsStub.reset()
   local g = dcsStub.makeGroup({
