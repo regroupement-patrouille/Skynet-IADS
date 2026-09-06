@@ -83,6 +83,15 @@ function TestDcsStub:test_addEventHandler_captured()
   luaunit.assertIs(dcsStub.eventHandlers[1], h)
 end
 
+function TestDcsStub:test_removeEventHandler_drops_handler()
+  local a, b = {}, {}
+  world.addEventHandler(a)
+  world.addEventHandler(b)
+  world.removeEventHandler(a)
+  luaunit.assertEquals(#dcsStub.eventHandlers, 1)
+  luaunit.assertIs(dcsStub.eventHandlers[1], b)
+end
+
 function TestDcsStub:test_env_captured()
   env.info("info line")
   env.warning("warn line")

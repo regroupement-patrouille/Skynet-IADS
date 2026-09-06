@@ -72,6 +72,13 @@ world = {
 function world.addEventHandler(h)
   table.insert(dcsStub.eventHandlers, h)
 end
+function world.removeEventHandler(h)
+  for i = #dcsStub.eventHandlers, 1, -1 do
+    if dcsStub.eventHandlers[i] == h then
+      table.remove(dcsStub.eventHandlers, i)
+    end
+  end
+end
 
 local function _log(level, text)
   table.insert(dcsStub.logs, { level = level, text = tostring(text) })
