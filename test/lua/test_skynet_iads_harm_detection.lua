@@ -1,5 +1,5 @@
 --- Standalone port of unit-tests/test-skynet-iads-harm-detection.lua.
---- All 7 tests are mock-driven and require only local mock tables.
+--- All 6 tests are mock-driven and require only local mock tables.
 local base = debug.getinfo(1, "S").source:match("^@(.+)[\\/]") or "."
 luaunit = dofile(base .. "/luaunit.lua")
 dofile(base .. "/dcs-stub.lua")

@@ -48,8 +48,8 @@ function mist.utils.get3DDist(point1, point2)
 end
 
 -- copied from demo-missions/mist_4_5_107.lua : mist.random (integer, no decimals) — simplified to the
--- underlying math.random(l, u); the real one biases toward >=50 sample points, which is irrelevant
--- to correctness here.
+-- underlying math.random(l, u). The real one expands the choice pool to >=50 equal-weighted entries
+-- before picking (same uniform distribution, just more sample points), which is irrelevant here.
 function mist.random(firstNum, secondNum)
   if not secondNum then
     return math.random(1, firstNum)

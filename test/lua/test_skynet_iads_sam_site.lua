@@ -1,4 +1,4 @@
---- Standalone port of unit-tests/test-skynet-iads-sam-site.lua (14 tests).
+--- Standalone port of unit-tests/test-skynet-iads-sam-site.lua (12 tests).
 --- The DCS-mission version reads SAM groups baked into skynet-unit-tests.miz
 --- and kills units with trigger.action.explosion(...). Here the SAM groups are
 --- built by dcs-fixtures (F.samGroup), contacts by F.iadsContact, and units are
@@ -193,7 +193,10 @@ function TestSkynetIADSSAMSite:testSA2InformOfContactTargetNotInRange()
   -- .miz IADSContactFactory('test-not-in-firing-range-of-sa-2'): place it well
   -- outside the fixture search-radar range. distance from radar at (~0,0) is
   -- sqrt(500000^2) = 500000 m >> 120000 m fixture range => out of range.
-  dcsStub.world["test-not-in-firing-range-of-sa-2"] = dcsStub.makeUnit({
+  -- In the default GO_LIVE_WHEN_IN_KILL_ZONE, isTargetInRange also requires the
+  -- launcher leg (~40000 m horizontal) and the tracking-radar leg; the binding
+  -- one is the launcher's ~40000 m, and 500000 m is outside that too.
+  dcsStub.makeUnit({ -- self-registers into dcsStub.world (name given)
     name = "test-not-in-firing-range-of-sa-2", type = "F-16C", pos = { x = 500000, y = 3000, z = 0 } })
   local target = F.iadsContact('test-not-in-firing-range-of-sa-2')
   self.samSite:informOfContact(target)
@@ -211,7 +214,7 @@ function TestSkynetIADSSAMSite:testSA2InforOfContactInSearchRangeSAMSiteGoLiveWh
   -- contact INSIDE the search radar range: distance sqrt(50000^2) = 50000 m
   -- < 120000 m fixture range => in search range => GO_LIVE_WHEN_IN_SEARCH_RANGE
   -- goes the SAM live.
-  dcsStub.world["test-not-in-firing-range-of-sa-2"] = dcsStub.makeUnit({
+  dcsStub.makeUnit({ -- self-registers into dcsStub.world (name given)
     name = "test-not-in-firing-range-of-sa-2", type = "F-16C", pos = { x = 50000, y = 3000, z = 0 } })
   local target = F.iadsContact('test-not-in-firing-range-of-sa-2')
   self.samSite:informOfContact(target)
@@ -253,7 +256,7 @@ function TestSkynetIADSSAMSite:testGoLiveConstraint()
   self:setUp()
   -- .miz IADSContactFactory('test-in-firing-range-of-sa-2'): height only matters
   -- here. 2000 m / 0.3048 = 6561.68 ft => round 6562 ft, which is > 4000.
-  dcsStub.world["test-in-firing-range-of-sa-2"] = dcsStub.makeUnit({
+  dcsStub.makeUnit({ -- self-registers into dcsStub.world (name given)
     name = "test-in-firing-range-of-sa-2", type = "F-16C", pos = { x = 10000, y = 2000, z = 0 } })
   local contact = F.iadsContact('test-in-firing-range-of-sa-2')
 
@@ -280,7 +283,7 @@ function TestSkynetIADSSAMSite:testRemoveGoLiveConstraint()
   self:setUp()
   -- contact value is irrelevant to this test; only getGoLiveConstraints["test"]
   -- is invoked with it, and testMarkerFunction ignores its argument.
-  dcsStub.world["test-in-firing-range-of-sa-2"] = dcsStub.makeUnit({
+  dcsStub.makeUnit({ -- self-registers into dcsStub.world (name given)
     name = "test-in-firing-range-of-sa-2", type = "F-16C", pos = { x = 10000, y = 2000, z = 0 } })
   local contact = F.iadsContact('test-in-firing-range-of-sa-2')
 
@@ -315,7 +318,10 @@ function TestSkynetIADSSAMSite:testSAMSiteWillNotGoLiveIfConstraintFailesAndCont
   -- contact IN range (distance sqrt(10000^2) = 10000 m < 120000 m fixture
   -- range) but at 2000 m / 0.3048 = 6562 ft, and the constraint requires
   -- < 4000 ft => constraint fails => SAM must not go live.
-  dcsStub.world["test-in-firing-range-of-sa-2"] = dcsStub.makeUnit({
+  -- In the default GO_LIVE_WHEN_IN_KILL_ZONE the binding leg is the launcher's
+  -- ~40000 m horizontal range, not the 120000 m search radar; the contact at
+  -- 10000 m (and 2000 m alt) clears that leg too, so range is not what stops it.
+  dcsStub.makeUnit({ -- self-registers into dcsStub.world (name given)
     name = "test-in-firing-range-of-sa-2", type = "F-16C", pos = { x = 10000, y = 2000, z = 0 } })
   local contact = F.iadsContact('test-in-firing-range-of-sa-2')
 

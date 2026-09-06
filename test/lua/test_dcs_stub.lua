@@ -49,6 +49,9 @@ function TestDcsStub:test_makeUnit_basic_accessors()
   luaunit.assertEquals(p.p.x, 10)
   luaunit.assertEquals(p.p.y, 500)
   luaunit.assertEquals(p.p.z, -20)
+  -- makeUnit self-registers into dcsStub.world when a name is given
+  local reg = dcsStub.makeUnit({ name = "reg-u" })
+  luaunit.assertIs(Unit.getByName("reg-u"), reg)
 end
 
 function TestDcsStub:test_makeUnit_exists_false()
@@ -101,7 +104,6 @@ function TestDcsStub:test_env_captured()
 end
 
 function TestDcsStub:test_scheduler_ids_and_removal()
-  dcsStub.reset()
   luaunit.assertEquals(dcsStub.scheduledCount(), 0)
   local id1 = mist.scheduleFunction(function() end, {}, 1, 10)
   local id2 = mist.scheduleFunction(function() end, {}, 1, 10)
@@ -123,7 +125,6 @@ function TestDcsStub:test_reset_clears_scheduler()
 end
 
 function TestDcsStub:test_timer_getTime_tracks_clock()
-  dcsStub.reset()
   dcsStub.setClock(400)
   luaunit.assertEquals(timer.getTime(), 400)
   luaunit.assertEquals(timer.getTime(), timer.getAbsTime())
@@ -139,7 +140,6 @@ function TestDcsStub:test_ai_option_values()
 end
 
 function TestDcsStub:test_unit_destroy_and_category()
-  dcsStub.reset()
   local u = dcsStub.makeUnit({ name = "d1", type = "T", pos = { x = 0, y = 0, z = 0 } })
   luaunit.assertEquals(u:isExist(), true)
   luaunit.assertEquals(Object.getCategory(u), Object.Category.UNIT)
@@ -179,7 +179,6 @@ function TestDcsStub:test_group_controller_setOnOff_and_enableEmission()
 end
 
 function TestDcsStub:test_makeGroup_units_and_destroy()
-  dcsStub.reset()
   local g = dcsStub.makeGroup({
     name = "G1",
     units = {
@@ -199,7 +198,6 @@ function TestDcsStub:test_makeGroup_units_and_destroy()
 end
 
 function TestDcsStub:test_makeStatic_registry_and_destroy()
-  dcsStub.reset()
   local s = dcsStub.makeStatic({ name = "S1", type = "Comms tower M", pos = { x = 0, y = 0, z = 0 } })
   luaunit.assertIs(StaticObject.getByName("S1"), s)
   luaunit.assertEquals(s:isExist(), true)

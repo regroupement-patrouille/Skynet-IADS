@@ -26,8 +26,11 @@ local function launcherAmmo(count)
     {
       desc = {
         category = Weapon.Category.MISSILE,
+        -- real SA-2 data (see the trailing comment block in
+        -- skynet-iads-source/syknet-iads-sam-launcher.lua). altMin >= altMax, so
+        -- setupRangeData takes altMin: maximumRange stays 40000 m.
         rangeMaxAltMin = 40000,
-        rangeMaxAltMax = 40000,
+        rangeMaxAltMax = 30000,
         altMax = 12000,
       },
       count = count,
@@ -69,9 +72,8 @@ function F.samGroup(natoShort, groupName)
 end
 
 function F.connectionNodeUnit(name)
-  local u = dcsStub.makeUnit({ name = name, type = "Ural-375", pos = { x = 0, y = 0, z = 0 } })
-  dcsStub.world[name] = u
-  return u
+  -- makeUnit self-registers into dcsStub.world (name given), like makeStatic below.
+  return dcsStub.makeUnit({ name = name, type = "Ural-375", pos = { x = 0, y = 0, z = 0 } })
 end
 
 function F.connectionNodeStatic(name)

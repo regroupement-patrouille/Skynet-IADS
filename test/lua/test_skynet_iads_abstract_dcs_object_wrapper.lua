@@ -1,5 +1,5 @@
 --- Standalone port of unit-tests/test-skynet-iads-abstract-dcs-object-wrapper.lua.
---- All 7 tests exercise the wrapper around a fixture unit: EW-SA-6, a Kub 1S91 str.
+--- All 5 tests exercise the wrapper around a fixture unit: EW-SA-6, a Kub 1S91 str.
 local base = debug.getinfo(1, "S").source:match("^@(.+)[\\/]") or "."
 luaunit = dofile(base .. "/luaunit.lua")
 dofile(base .. "/dcs-stub.lua")
@@ -12,7 +12,6 @@ TestSkynetIADSAbstractDCSObjectWrapper = {}
 function TestSkynetIADSAbstractDCSObjectWrapper:setUp()
 	dcsStub.reset()
 	self.unit = dcsStub.makeUnit({ name = "EW-SA-6", type = "Kub 1S91 str", pos = { x = 0, y = 0, z = 0 } })
-	dcsStub.world["EW-SA-6"] = self.unit
 	self.abstractObjectWrapper = SkynetIADSAbstractDCSObjectWrapper:create(self.unit)
 end
 

@@ -17,7 +17,6 @@ TestSkynetIADSJammer = {}
 function TestSkynetIADSJammer:setUp()
   dcsStub.reset()
   self.emitter = dcsStub.makeUnit({ name = "jammer-source", type = "F-16C", pos = { x = 0, y = 1000, z = 0 } })
-  dcsStub.world["jammer-source"] = self.emitter
   self.mockIADS = {}
   function self.mockIADS:getDebugSettings()
     return {}
@@ -120,7 +119,6 @@ end
 function TestSkynetIADSJammer:testDestroyEmitter()
   self:tearDown()
   local emitter = dcsStub.makeUnit({ name = "jammer-source-2", type = "F-16C", pos = { x = 0, y = 1000, z = 0 } })
-  dcsStub.world["jammer-source-2"] = emitter
   self.jammer = SkynetIADSJammer:create(emitter, SkynetIADS:create())
   self.jammer:masterArmOn()
   luaunit.assertEquals(dcsStub.scheduledCount(), 1)

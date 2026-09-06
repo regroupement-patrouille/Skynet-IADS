@@ -1,7 +1,8 @@
 --- Fake DCS scripting environment for the standalone Lua test suite.
 --- Lua 5.1 clean. Defines the DCS globals the loaded Skynet source touches,
---- plus fixture factories. Scoped to what milestone 1 (the contact module)
---- needs; grows as more modules are ported.
+--- plus fixture factories. Started scoped to the contact module (M1); M2 grew
+--- it for the scheduler fake, group/static fixtures, AI.Option, controllers,
+--- sensors and ammo. Grows as more modules are ported.
 
 local now = 0
 
@@ -104,6 +105,10 @@ timer.getTime = function()
   return now
 end
 
+-- Deliberate no-fire scheduler fake: tasks are recorded and cancellable but
+-- never dispatched, matching what the .miz tests see inside a synchronous
+-- luaunit run. Lives here, not in mist-stub.lua, because it is DCS-runtime
+-- plumbing, not a copied math function.
 mist = mist or {}
 function mist.scheduleFunction(fn, args, startTime, interval)
   nextScheduleId = nextScheduleId + 1
@@ -147,6 +152,8 @@ land = {
 --- dcsStub.makeUnit{ name=, type=, category=, pos={x=,y=,z=}, heading=, exists=, desc= }
 ---   pos.y is altitude in metres (DCS convention).
 ---   heading is radians, grid (0 = +x = grid north; pi/2 = +z = grid east).
+---   Self-registers into dcsStub.world when name is given (so Unit.getByName
+---   finds it), mirroring dcsStub.makeGroup / dcsStub.makeStatic.
 function dcsStub.makeUnit(spec)
   spec = spec or {}
   local pos = spec.pos or { x = 0, y = 0, z = 0 }
@@ -207,6 +214,9 @@ function dcsStub.makeUnit(spec)
   end
   function u:__destroy()
     spec.exists = false
+  end
+  if spec.name then
+    dcsStub.world[spec.name] = u
   end
   return u
 end
