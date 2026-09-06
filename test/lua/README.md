@@ -9,16 +9,21 @@ suites in `unit-tests/*.miz`.
 
 ## Run
 
-    # one suite
-    lua5.1 test/lua/test_skynet_iads_contact.lua
+Where `lua5.1` is on PATH (Linux, macOS, CI):
 
-    # all suites
-    lua5.1 test/lua/run.lua
+    lua5.1 test/lua/run.lua                          # all suites
+    lua5.1 test/lua/run.lua contact                  # suites whose filename contains "contact"
+    lua5.1 test/lua/test_skynet_iads_contact.lua     # one suite directly
 
-    # suites whose filename contains a string
-    lua5.1 test/lua/run.lua contact
+On Windows without `lua5.1` on PATH, use the "Lua for Windows" binary
+(`C:\Program Files (x86)\Lua\5.1\lua.exe`).
 
-On Windows without `lua5.1` on PATH, use the "Lua for Windows" binary:
+PowerShell needs the call operator `&` because the command line starts with a
+quoted path:
+
+    & "C:\Program Files (x86)\Lua\5.1\lua.exe" test\lua\run.lua
+
+cmd.exe takes the quoted path as-is:
 
     "C:\Program Files (x86)\Lua\5.1\lua.exe" test\lua\run.lua
 
