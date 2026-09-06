@@ -36,4 +36,17 @@ function TestMistStub:test_getHeading_wraps_into_0_2pi()
   luaunit.assertNil(mist.getHeading(nofix))
 end
 
+function TestMistStub:test_get3DDist()
+  luaunit.assertAlmostEquals(mist.utils.get3DDist({ x = 0, y = 0, z = 0 }, { x = 3, y = 0, z = 4 }), 5, 1e-9)
+  luaunit.assertAlmostEquals(mist.utils.get3DDist({ x = 0, y = 0, z = 0 }, { x = 0, y = 12, z = 0 }), 12, 1e-9)
+end
+
+function TestMistStub:test_random_in_range()
+  for _ = 1, 20 do
+    local r = mist.random(3, 5)
+    luaunit.assertEquals(r >= 3 and r <= 5, true)
+  end
+  luaunit.assertEquals(mist.random(1) >= 1, true)
+end
+
 os.exit(luaunit.LuaUnit.run())

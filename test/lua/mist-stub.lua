@@ -39,6 +39,24 @@ function mist.utils.get2DDist(point1, point2)
   return (dx * dx + dz * dz) ^ 0.5
 end
 
+-- copied from demo-missions/mist_4_5_107.lua : mist.utils.get3DDist (= mist.vec.mag of the delta)
+function mist.utils.get3DDist(point1, point2)
+  local dx = point1.x - point2.x
+  local dy = point1.y - point2.y
+  local dz = point1.z - point2.z
+  return (dx * dx + dy * dy + dz * dz) ^ 0.5
+end
+
+-- copied from demo-missions/mist_4_5_107.lua : mist.random (integer, no decimals) — simplified to the
+-- underlying math.random(l, u); the real one biases toward >=50 sample points, which is irrelevant
+-- to correctness here.
+function mist.random(firstNum, secondNum)
+  if not secondNum then
+    return math.random(1, firstNum)
+  end
+  return math.random(firstNum, secondNum)
+end
+
 -- copied from demo-missions/mist_4_5_107.lua : mist.getHeading — with the
 -- mist.getNorthCorrection term dropped (0 here, see file header).
 function mist.getHeading(unit)

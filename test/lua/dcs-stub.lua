@@ -5,6 +5,9 @@
 
 local now = 0
 
+local scheduled = {}
+local nextScheduleId = 0
+
 dcsStub = {}
 dcsStub.world = {}          -- name -> fake object, backs *.getByName
 dcsStub.logs = {}           -- { { level=, text= }, ... } from env.*
@@ -24,6 +27,16 @@ function dcsStub.reset()
   dcsStub.world = {}
   dcsStub.logs = {}
   dcsStub.eventHandlers = {}
+  scheduled = {}
+  nextScheduleId = 0
+end
+
+function dcsStub.scheduledCount()
+  local n = 0
+  for _ in pairs(scheduled) do
+    n = n + 1
+  end
+  return n
 end
 
 -- ---- enums / singletons -------------------------------------------------
@@ -49,6 +62,7 @@ Weapon = { Category = { SHELL = 0, MISSILE = 1, ROCKET = 2, BOMB = 3 } }
 -- wrappers gives its Group fixtures `setmetatable(g, Group)`.
 Group = {}
 Unit = {}
+Unit.SensorType = { OPTIC = 0, RADAR = 1, IRST = 2, RWR = 3 }
 StaticObject = {}
 
 world = {
@@ -78,6 +92,48 @@ trigger = { action = { outText = function() end, explosion = function() end } }
 timer = { getAbsTime = function()
   return now
 end }
+timer.getTime = function()
+  return now
+end
+
+mist = mist or {}
+function mist.scheduleFunction(fn, args, startTime, interval)
+  nextScheduleId = nextScheduleId + 1
+  scheduled[nextScheduleId] = { fn = fn, args = args, startTime = startTime, interval = interval }
+  return nextScheduleId
+end
+function mist.removeFunction(id)
+  if id ~= nil and scheduled[id] ~= nil then
+    scheduled[id] = nil
+    return id
+  end
+  return nil
+end
+
+AI = {
+  Option = {
+    Air = {
+      id = { NO_OPTION = -1, ROE = 0 },
+      val = { ROE = { WEAPON_FREE = 0, OPEN_FIRE_WEAPON_FREE = 1, OPEN_FIRE = 2, RETURN_FIRE = 3, WEAPON_HOLD = 4 } },
+    },
+    Ground = {
+      id = { NO_OPTION = -1, ROE = 0, ALARM_STATE = 9, ENGAGE_AIR_WEAPONS = 20 },
+      val = {
+        ROE = { OPEN_FIRE = 2, RETURN_FIRE = 3, WEAPON_HOLD = 4 },
+        ALARM_STATE = { AUTO = 0, GREEN = 1, RED = 2 },
+      },
+    },
+  },
+}
+
+land = {
+  getIP = function()
+    return nil
+  end,
+  isVisible = function()
+    return true
+  end,
+}
 
 -- ---- fixture factory --------------------------------------------------
 --- dcsStub.makeUnit{ name=, type=, category=, pos={x=,y=,z=}, heading=, exists=, desc= }
@@ -120,7 +176,105 @@ function dcsStub.makeUnit(spec)
   function u:__setHeading(h)
     heading = h
   end
+  u.__controllerCalls = {}
+  local controller = {
+    setOption = function(_, id, value)
+      table.insert(u.__controllerCalls, { id = id, value = value })
+    end,
+  }
+  function u:getController()
+    return controller
+  end
+  function u:getSensors()
+    return spec.sensors
+  end
+  function u:getAmmo()
+    return spec.ammo
+  end
+  function u:__destroy()
+    spec.exists = false
+  end
   return u
+end
+
+function dcsStub.makeGroup(groupSpec)
+  groupSpec = groupSpec or {}
+  local unitSpecs = groupSpec.units or {}
+  local units = {}
+  for i = 1, #unitSpecs do
+    units[i] = dcsStub.makeUnit(unitSpecs[i])
+  end
+  local g = {}
+  g.__controllerCalls = {}
+  local controller = {
+    setOption = function(_, id, value)
+      table.insert(g.__controllerCalls, { id = id, value = value })
+    end,
+  }
+  function g:getName()
+    return groupSpec.name or "unnamed-group"
+  end
+  function g:getUnits()
+    local live = {}
+    for i = 1, #units do
+      if units[i]:isExist() then
+        live[#live + 1] = units[i]
+      end
+    end
+    return live
+  end
+  function g:getUnit(i)
+    return self:getUnits()[i]
+  end
+  function g:isExist()
+    if #units == 0 then
+      return true
+    end
+    return #self:getUnits() > 0
+  end
+  function g:getController()
+    return controller
+  end
+  function g:__destroy()
+    for i = 1, #units do
+      units[i]:__destroy()
+    end
+  end
+  if groupSpec.name then
+    dcsStub.world[groupSpec.name] = g
+  end
+  return g
+end
+
+function dcsStub.makeStatic(spec)
+  spec = spec or {}
+  local pos = spec.pos or { x = 0, y = 0, z = 0 }
+  local s = { __category = Object.Category.STATIC }
+  function s:getName()
+    return spec.name or "unnamed-static"
+  end
+  function s:getTypeName()
+    return spec.type or "unknown-static"
+  end
+  function s:getPosition()
+    return { p = { x = pos.x, y = pos.y, z = pos.z } }
+  end
+  function s:isExist()
+    if spec.exists == nil then
+      return true
+    end
+    return spec.exists
+  end
+  function s:getDesc()
+    return spec.desc or {}
+  end
+  function s:__destroy()
+    spec.exists = false
+  end
+  if spec.name then
+    dcsStub.world[spec.name] = s
+  end
+  return s
 end
 
 function Unit.getByName(name)
