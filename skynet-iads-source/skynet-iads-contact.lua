@@ -76,10 +76,11 @@ function SkynetIADSContact:getTypeName()
 	-- Using Object.getCategory instead will get us nil in that case.
 	if self:getDCSRepresentation() ~= nil then
 		local category = Object.getCategory(self:getDCSRepresentation())
-		if category == Object.Category.UNIT then
+		-- a contact can be a unit or a weapon (missile, bomb, rocket, shell); in both cases self.typeName holds the DCS type name
+		if category == Object.Category.UNIT or category == Object.Category.WEAPON then
 			return self.typeName
 		end
-	end 
+	end
 	return "UNKNOWN"
 end
 

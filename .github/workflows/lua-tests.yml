@@ -1,0 +1,24 @@
+name: Lua tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lua-unit-tests:
+    name: Lua unit tests (5.1)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Lua 5.1
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y lua5.1
+
+      - name: Run the standalone suite
+        run: lua5.1 test/lua/run.lua
