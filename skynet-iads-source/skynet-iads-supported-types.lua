@@ -382,7 +382,7 @@ samTypesDB = {
 			},
 		},
 		['name'] = {
-			['NATO'] = 'Zues',
+			['NATO'] = 'Zeus',
 		},
 		['harm_detection_chance'] = 10
 	},
